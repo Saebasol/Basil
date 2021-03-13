@@ -54,6 +54,11 @@ class Basil:
         for index in index_list:
             galleryinfo = await self.get_galleryinfo(index)
 
+            if await GalleryInfo.get_or_none(id=galleryinfo.galleryid):
+                print(f"{index} 패스됨 ({count}/{total_index_list})")
+                count += 1
+                continue
+
             galleyinfo_orm_object = await GalleryInfo.create(
                 language_localname=galleryinfo.language_localname,
                 language=galleryinfo.language,
