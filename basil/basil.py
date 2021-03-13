@@ -54,32 +54,6 @@ class Basil:
         for index in index_list:
             galleryinfo = await self.get_galleryinfo(index)
 
-            file_orm_object_list = []
-            for file_info in galleryinfo.files:
-                file_orm_object = File(
-                    index_id=galleryinfo.galleryid,
-                    width=file_info.get("width"),
-                    hash=file_info.get("hash"),
-                    haswebp=file_info.get("haswebp"),
-                    hasavifsmalltn=file_info.get("hasavifsmalltn"),
-                    name=file_info.get("name"),
-                    height=file_info.get("height"),
-                    hasavif=file_info.get("hasavif"),
-                )
-                await file_orm_object.save()
-                file_orm_object_list.append(file_orm_object)
-
-            tag_orm_object_list = []
-            for tag_info in galleryinfo.tags:
-                tag_orm_object = Tag(
-                    index_id=galleryinfo.galleryid,
-                    male=tag_info.get("male"),
-                    female=tag_info.get("female"),
-                    url=tag_info.get("url"),
-                )
-                await tag_orm_object.save()
-                tag_orm_object_list.append(tag_orm_object)
-
             galleyinfo_orm_object = await GalleryInfo.create(
                 language_localname=galleryinfo.language_localname,
                 language=galleryinfo.language,
@@ -89,8 +63,37 @@ class Basil:
                 id=galleryinfo.galleryid,
                 type=galleryinfo.type,
             )
-            await galleyinfo_orm_object.files.add(*file_orm_object_list)
-            await galleyinfo_orm_object.tags.add(*tag_orm_object_list)
+
+            if galleryinfo.files:
+                file_orm_object_list = []
+                for file_info in galleryinfo.files:
+                    file_orm_object = File(
+                        index_id=galleryinfo.galleryid,
+                        width=file_info.get("width"),
+                        hash=file_info.get("hash"),
+                        haswebp=file_info.get("haswebp"),
+                        hasavifsmalltn=file_info.get("hasavifsmalltn"),
+                        name=file_info.get("name"),
+                        height=file_info.get("height"),
+                        hasavif=file_info.get("hasavif"),
+                    )
+                    await file_orm_object.save()
+                    file_orm_object_list.append(file_orm_object)
+                await galleyinfo_orm_object.files.add(*file_orm_object_list)
+
+            if galleryinfo.tags:
+                tag_orm_object_list = []
+                for tag_info in galleryinfo.tags:
+                    tag_orm_object = Tag(
+                        index_id=galleryinfo.galleryid,
+                        male=tag_info.get("male"),
+                        female=tag_info.get("female"),
+                        url=tag_info.get("url"),
+                    )
+                    await tag_orm_object.save()
+                    tag_orm_object_list.append(tag_orm_object)
+
+                await galleyinfo_orm_object.tags.add(*tag_orm_object_list)
             count += 1
             print(f"{index} 완료 ({count}/{total_index_list})")
 
