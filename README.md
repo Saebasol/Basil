@@ -1,2 +1,3 @@
 # Basil
- Hitomi galleryinfo db mirror
+
+Hitomi galleryinfo db mirror
