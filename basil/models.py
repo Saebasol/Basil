@@ -2,6 +2,9 @@ from tortoise.models import Model
 from tortoise.fields.data import CharField, IntField, TextField
 from tortoise.fields.relational import ManyToManyField
 
+class Index(Model):
+    id = IntField(pk=True)
+    index_id = CharField(255)
 
 class GalleryInfo(Model):
     language_localname = TextField(null=True)
