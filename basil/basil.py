@@ -40,6 +40,21 @@ class Basil:
             ) as r:
                 js_to_json = (await r.text()).replace("var galleryinfo = ", "")
                 return HitomiGalleryInfoModel.parse_galleryinfo(json.loads(js_to_json))
+            
+    async def migration_index(self):
+        await Tortoise.init(
+            db_url=self.db_url,
+            modules={"models": ["basil.models"]},
+        )
+        await Tortoise.generate_schemas()
+
+        index_list = await self.fetch_index(self.index_file)
+        total_index_list = len(index_list)
+        count = 0
+
+        for index in index_list:
+            await Index.create(index_id=index)
+            print(f"{index} 완료 ({count}/{total_index_list})")
 
     async def migration(self):
         await Tortoise.init(
@@ -104,3 +119,6 @@ class Basil:
 
     def start(self):
         run_async(self.migration())
+    
+    def start_index(self):
+        run_async(self.migration_index())
